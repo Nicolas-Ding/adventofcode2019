@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Day5;
 
 namespace Day7
 {
@@ -11,22 +12,40 @@ namespace Day7
             string input =
                 "3,8,1001,8,10,8,105,1,0,0,21,42,55,76,89,114,195,276,357,438,99999,3,9,1001,9,3,9,1002,9,3,9,1001,9,3,9,1002,9,2,9,4,9,99,3,9,102,2,9,9,101,5,9,9,4,9,99,3,9,102,3,9,9,101,5,9,9,1002,9,2,9,101,4,9,9,4,9,99,3,9,102,5,9,9,1001,9,3,9,4,9,99,3,9,1001,9,4,9,102,5,9,9,1001,9,5,9,1002,9,2,9,101,2,9,9,4,9,99,3,9,101,1,9,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1001,9,2,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,2,9,4,9,99,3,9,1001,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,1,9,9,4,9,3,9,1002,9,2,9,4,9,99,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,1,9,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,99,3,9,1002,9,2,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,1,9,4,9,99,3,9,1001,9,1,9,4,9,3,9,101,1,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,2,9,9,4,9,99";
 
-            ///input = "3,31,3,32,1002,32,10,32,1001,31,-2,31,1007,31,0,33,1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0";
+            // input = "3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10";
 
-            int maxSignal = 0;
-            foreach (IEnumerable<int> parameterModes in GetPermutations(new List<int>() {0, 1, 2, 3, 4}, 5))
+            int maxOutput = 0;
+
+            foreach (IEnumerable<int> parameterModes in GetPermutations(new List<int>() {5, 6, 7, 8, 9}, 5))
             {
-                int currentInput = 0;
                 int[] parameterModesArray = parameterModes as int[] ?? parameterModes.ToArray();
-                foreach (int parameterMode in parameterModesArray)
+
+                IntCodeReader[] readers = new IntCodeReader[]
                 {
-                    currentInput = Day5.Day5.RunIntCode(input, new int[] {parameterMode, currentInput});
+                    new IntCodeReader(input, parameterModesArray[0]),
+                    new IntCodeReader(input, parameterModesArray[1]),
+                    new IntCodeReader(input, parameterModesArray[2]),
+                    new IntCodeReader(input, parameterModesArray[3]),
+                    new IntCodeReader(input, parameterModesArray[4]),
+                };
+
+                int currentInput = 0;
+                int i = 0;
+                while (true)
+                {
+                    int nextInput = readers[i % 5].RunIntCode(new int[] {currentInput});
+                    if (nextInput == Int32.MinValue)
+                    {
+                        break;
+                    }
+                    currentInput = nextInput;
+                    i++;
                 }
 
-                if (currentInput > maxSignal)
+                if (currentInput > maxOutput)
                 {
-                    maxSignal = currentInput;
-                    Console.WriteLine($"{currentInput} reached with {String.Join(',', parameterModesArray)}");
+                    Console.WriteLine($"{currentInput} : {string.Join(',', parameterModesArray)}");
+                    maxOutput = currentInput;
                 }
             }
         }
