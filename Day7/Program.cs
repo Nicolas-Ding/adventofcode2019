@@ -45,6 +45,7 @@ namespace Day7
                 if (currentInput > maxOutput)
                 {
                     Console.WriteLine($"{currentInput} : {string.Join(',', parameterModesArray)}");
+                    Console.WriteLine(i);
                     maxOutput = currentInput;
                 }
             }
