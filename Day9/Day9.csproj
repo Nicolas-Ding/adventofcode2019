@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Day5\Day5.csproj" />
+    <ProjectReference Include="..\IntCodeUtils\IntCodeUtils.csproj" />
   </ItemGroup>
 
 </Project>
