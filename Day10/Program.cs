@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Day10
 {
@@ -8,7 +10,7 @@ namespace Day10
         static void Main(string[] args)
         {
             string line = Console.ReadLine();
-            HashSet<(int, int)> planets = new HashSet<(int, int)>();
+            var planets = new HashSet<(int, int)>();
             int rowNumber = 0;
             while (!string.IsNullOrEmpty(line))
             {
@@ -24,40 +26,61 @@ namespace Day10
             }
 
             int maxScore = 0;
+            var planetAnglesAndPositions = new Dictionary<double, List<(double, int, int)>>();
             foreach ((int x, int y) tentativePosition in planets)
             {
-                int currentScore = ComputePositionScore(tentativePosition, planets);
-                if (currentScore > maxScore)
+                var currentDict = ComputePositionScore(tentativePosition, planets);
+                if (currentDict.Count > maxScore)
                 {
-                    Console.WriteLine($"{currentScore} : {tentativePosition.x},{tentativePosition.y}");
-                    maxScore = currentScore;
+                    Console.WriteLine($"{maxScore} : {tentativePosition.x},{tentativePosition.y}");
+                    maxScore = currentDict.Count;
+                    planetAnglesAndPositions = currentDict;
                 }
+            }
+
+            var sortedPlanets = new SortedList<double, (int x, int y)>();
+
+            foreach ((double angle, List<(double angle, int x, int y)> distances) in planetAnglesAndPositions)
+            {
+                int addedAngle = 0;
+                distances.Sort();
+                foreach ((double angle, int x, int y) distance in distances)
+                {
+                    sortedPlanets.Add(angle + addedAngle, (distance.x, distance.y));
+                    addedAngle += 360;
+                }
+            }
+
+            int i = 1;
+            foreach (KeyValuePair<double, (int x, int y)> planet in sortedPlanets)
+            {
+                Console.WriteLine($"Asteroid {i} to be vaporized is {planet.Value.x},{planet.Value.y}");
+                i++;
             }
         }
 
-        static int ComputePositionScore((int x, int y) position, HashSet<(int, int)> map)
+        static Dictionary<double, List<(double, int, int)>> ComputePositionScore((int x, int y) position, HashSet<(int, int)> map)
         {
-            HashSet<(double, double)> viewingAngles = new HashSet<(double, double)>();
+            var angleAndPosition = new Dictionary<double, List<(double, int, int)>>();
 
             foreach ((int x, int y) nextPlanet in map)
             {
 
                 (int x, int y) relativePlanet = (nextPlanet.x - position.x, nextPlanet.y - position.y);
-                if (relativePlanet.x == 0 && relativePlanet.y == 0)
+                if (relativePlanet.x != 0 || relativePlanet.y != 0)
                 {
-                    // Do nothing, current planet
-                }
-                else if (relativePlanet.x == 0)
-                {
-                    viewingAngles.Add((0, relativePlanet.y / Math.Abs((double) relativePlanet.y)));
-                }
-                else
-                {
-                    viewingAngles.Add((relativePlanet.x / Math.Abs((double) relativePlanet.x), relativePlanet.y / Math.Abs((double) relativePlanet.x)));
+                    double distance = Math.Sqrt(relativePlanet.x * relativePlanet.x + relativePlanet.y * relativePlanet.y);
+                    double radian = Math.Atan2(relativePlanet.y, relativePlanet.x);
+                    double angle = (radian * (180 / Math.PI) + 360 + 90) % 360;
+                    if (!angleAndPosition.ContainsKey(angle))
+                    {
+                        angleAndPosition[angle] = new List<(double, int, int)>();
+                    }
+                    angleAndPosition[angle].Add((distance, nextPlanet.x, nextPlanet.y));
                 }
             }
 
-            return viewingAngles.Count;
+            return angleAndPosition;
         }
     }
 }
