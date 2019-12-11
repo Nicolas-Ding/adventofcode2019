@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using IntCodeUtils;
 
 namespace Day5
 {
@@ -13,7 +14,7 @@ namespace Day5
             
             IntCodeReader reader = new IntCodeReader(line);
 
-            reader.RunIntCode(new int[] {0});
+            reader.RunIntCode(() => 0);
         }
     }
 }

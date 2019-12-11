@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Day5
+namespace IntCodeUtils
 {
     public class IntCodeReader
     {
@@ -19,7 +19,7 @@ namespace Day5
             _relativeBase = 0;
         }
 
-        public long RunIntCode(int[] inputs)
+        public long RunIntCode(Func<long> GetInputs)
         {
             int inputCursor = 0;
 
@@ -38,7 +38,7 @@ namespace Day5
                         _compteur += 4;
                         break;
                     case 3:
-                        int input;
+                        long input;
                         if (_parameterMode >= 0)
                         {
                             input = _parameterMode;
@@ -46,7 +46,7 @@ namespace Day5
                         }
                         else
                         {
-                            input = inputs[inputCursor];
+                            input = GetInputs();
                             inputCursor++;
                         }
 

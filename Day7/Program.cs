@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Day5;
+using IntCodeUtils;
 
 namespace Day7
 {
@@ -35,7 +36,7 @@ namespace Day7
                 int i = 0;
                 while (true)
                 {
-                    long nextInput = readers[i % 5].RunIntCode(new int[] {(int) currentInput});
+                    long nextInput = readers[i % 5].RunIntCode(() => (int) currentInput);
                     if (nextInput == Int32.MinValue)
                     {
                         break;

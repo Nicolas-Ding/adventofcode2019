@@ -1,5 +1,6 @@
 ﻿using System;
 using Day5;
+using IntCodeUtils;
 
 namespace Day9
 {
@@ -18,7 +19,7 @@ namespace Day9
             long res = 0;
             while (res != int.MinValue)
             {
-                res = intCodeReader.RunIntCode(new int[] {1});
+                res = intCodeReader.RunIntCode(() => 1);
                 Console.WriteLine(res);
             }
         }
