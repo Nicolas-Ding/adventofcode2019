@@ -17,6 +17,9 @@ namespace Day11
             // 0 and default are black, 1 means white
             var colors = new Dictionary<(int, int), long>();
 
+            // part 2 initialization
+            colors[(0, 0)] = 1;
+
             (int x, int y) currentPosition = (0, 0);
             Direction currentDirection = Direction.Up;
 
@@ -77,7 +80,16 @@ namespace Day11
                         break;
                 }
             }
-            Console.WriteLine(colors.Count);
+            Console.Clear();
+            foreach (KeyValuePair<(int x, int y), long> nextColor in colors)
+            {
+                Console.SetCursorPosition(nextColor.Key.x, nextColor.Key.y);
+                if (nextColor.Value == 1)
+                {
+                    Console.Write('■');
+                }
+            }
+
         }
     }
 }
