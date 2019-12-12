@@ -1,27 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Day12
 {
     class Program
     {
+        static long gcd(long a, long b)
+        {
+            return b == 0 ? a : gcd(b, a % b);
+        }
+        static long lcm(long m, long n)
+        {
+            return (long) (m * n) / gcd(m, n);
+        }
+
         static void Main(string[] args)
         {
-            Dictionary<(int, int, int, int, int, int, int, int), long> xCycles = new Dictionary<(int, int, int, int, int, int, int, int), long>();
-            Dictionary<(int, int, int, int, int, int, int, int), long> yCycles = new Dictionary<(int, int, int, int, int, int, int, int), long>();
-            Dictionary<(int, int, int, int, int, int, int, int), long> zCycles = new Dictionary<(int, int, int, int, int, int, int, int), long>();
+            HashSet<(int, int, int, int, int, int, int, int)> xCycles = new HashSet<(int, int, int, int, int, int, int, int)>();
+            HashSet<(int, int, int, int, int, int, int, int)> yCycles = new HashSet<(int, int, int, int, int, int, int, int)>();
+            HashSet<(int, int, int, int, int, int, int, int)> zCycles = new HashSet<(int, int, int, int, int, int, int, int)>();
 
 
             bool xFound = false;
             bool yFound = false;
             bool zFound = false;
 
-            long xStart = 0;
             long xStep = 0;
-            long yStart = 0;
             long yStep = 0;
-            long zStart = 0;
             long zStep = 0;
 
             List<Moon> moons = new List<Moon>();
@@ -38,25 +45,26 @@ namespace Day12
             moons.Add(new Moon(7, -17, 1));
             moons.Add(new Moon(2, -11, -6));
 
+            xCycles.Add((
+                moons[0].Position.X, moons[0].Velocity.X,
+                moons[1].Position.X, moons[1].Velocity.X,
+                moons[2].Position.X, moons[2].Velocity.X,
+                moons[3].Position.X, moons[3].Velocity.X));
+
+            yCycles.Add((
+                moons[0].Position.Y, moons[0].Velocity.Y,
+                moons[1].Position.Y, moons[1].Velocity.Y,
+                moons[2].Position.Y, moons[2].Velocity.Y,
+                moons[3].Position.Y, moons[3].Velocity.Y));
+
+            zCycles.Add((
+                moons[0].Position.Z, moons[0].Velocity.Z,
+                moons[1].Position.Z, moons[1].Velocity.Z,
+                moons[2].Position.Z, moons[2].Velocity.Z,
+                moons[3].Position.Z, moons[3].Velocity.Z));
+
             for (long i = 0; i < 1000000000; i++)
             {
-                xCycles[(
-                    moons[0].Position.X,moons[0].Velocity.X, 
-                    moons[1].Position.X, moons[1].Velocity.X, 
-                    moons[2].Position.X, moons[2].Velocity.X, 
-                    moons[3].Position.X, moons[3].Velocity.X)] = i;
-
-                yCycles[(
-                    moons[0].Position.Y, moons[0].Velocity.Y,
-                    moons[1].Position.Y, moons[1].Velocity.Y,
-                    moons[2].Position.Y, moons[2].Velocity.Y,
-                    moons[3].Position.Y, moons[3].Velocity.Y)] = i;
-
-                zCycles[(
-                    moons[0].Position.Z, moons[0].Velocity.Z,
-                    moons[1].Position.Z, moons[1].Velocity.Z,
-                    moons[2].Position.Z, moons[2].Velocity.Z,
-                    moons[3].Position.Z, moons[3].Velocity.Z)] = i;
 
                 // Apply gravity on velocity
                 foreach (Moon moon in moons)
@@ -72,54 +80,39 @@ namespace Day12
                     moon.Position += moon.Velocity;
                 }
 
-                if (!xFound && xCycles.ContainsKey(
+                if (!xFound && xCycles.Contains(
                     (   moons[0].Position.X, moons[0].Velocity.X,
                         moons[1].Position.X, moons[1].Velocity.X,
                         moons[2].Position.X, moons[2].Velocity.X,
                         moons[3].Position.X, moons[3].Velocity.X)))
                 {
-                    long start = xCycles[(moons[0].Position.X, moons[0].Velocity.X,
-                        moons[1].Position.X, moons[1].Velocity.X,
-                        moons[2].Position.X, moons[2].Velocity.X,
-                        moons[3].Position.X, moons[3].Velocity.X)];
-                    Console.WriteLine($"Found a cycle for X coordinates starting at {start} with cycle {i - start + 1}");
+                    Console.WriteLine($"Found a cycle for X coordinates with cycle {i + 1}");
                     xFound = true;
-                    xStart = start;
-                    xStep = i - start + 1;
+                    xStep = i + 1;
                 }
 
 
-                if (!yFound && yCycles.ContainsKey(
+                if (!yFound && yCycles.Contains(
                     (moons[0].Position.Y, moons[0].Velocity.Y,
                         moons[1].Position.Y, moons[1].Velocity.Y,
                         moons[2].Position.Y, moons[2].Velocity.Y,
                         moons[3].Position.Y, moons[3].Velocity.Y)))
                 {
-                    long start = yCycles[(moons[0].Position.Y, moons[0].Velocity.Y,
-                        moons[1].Position.Y, moons[1].Velocity.Y,
-                        moons[2].Position.Y, moons[2].Velocity.Y,
-                        moons[3].Position.Y, moons[3].Velocity.Y)];
-                    Console.WriteLine($"Found a cycle for Y coordinates starting at {start} with cycle {i - start + 1}");
+                    Console.WriteLine($"Found a cycle for Y coordinates with cycle {i + 1}");
                     yFound = true;
-                    yStart = start;
-                    yStep = i - start + 1;
+                    yStep = i + 1;
                 }
 
 
-                if (!zFound && zCycles.ContainsKey(
+                if (!zFound && zCycles.Contains(
                     (moons[0].Position.Z, moons[0].Velocity.Z,
                         moons[1].Position.Z, moons[1].Velocity.Z,
                         moons[2].Position.Z, moons[2].Velocity.Z,
                         moons[3].Position.Z, moons[3].Velocity.Z)))
                 {
-                    long start = zCycles[(moons[0].Position.Z, moons[0].Velocity.Z,
-                        moons[1].Position.Z, moons[1].Velocity.Z,
-                        moons[2].Position.Z, moons[2].Velocity.Z,
-                        moons[3].Position.Z, moons[3].Velocity.Z)];
-                    Console.WriteLine($"Found a cycle for Z coordinates starting at {start} with cycle {i - start + 1}");
+                    Console.WriteLine($"Found a cycle for Z coordinates with cycle {i + 1}");
                     zFound = true;
-                    zStart = start;
-                    zStep = i - start + 1;
+                    zStep = i + 1;
                 }
 
                 if (xFound && yFound && zFound)
@@ -128,27 +121,7 @@ namespace Day12
                 }
             }
 
-            do
-            {
-                if (xStart <= yStart && xStart <= zStart)
-                {
-                    xStart += xStep;
-                }
-                else if (yStart <= xStart && yStart <= zStart)
-                {
-                    yStart += yStep;
-                }
-                else if (zStart <= xStart && zStart <= yStart)
-                {
-                    zStart += zStep;
-                }
-                else
-                {
-                    throw new Exception("shouldn't get here");
-                }
-            } while (!(xStart == yStart && yStart == zStart));
-
-            Console.WriteLine($"{xStart}, {yStart}, {zStart}");
+            Console.WriteLine($"{lcm(zStep, lcm(xStep, yStep))}");
         }
     }
 }
