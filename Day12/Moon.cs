@@ -22,5 +22,36 @@ namespace Day12
             };
             Velocity = new Point3D();
         }
+
+        protected bool Equals(Moon other)
+        {
+            return Equals(Velocity, other.Velocity) && Equals(Position, other.Position);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Moon) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Velocity != null ? Velocity.GetHashCode() : 0) * 397) ^ (Position != null ? Position.GetHashCode() : 0);
+            }
+        }
+
+        public static bool operator ==(Moon left, Moon right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Moon left, Moon right)
+        {
+            return !Equals(left, right);
+        }
     }
 }

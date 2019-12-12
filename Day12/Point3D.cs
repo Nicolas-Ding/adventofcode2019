@@ -61,5 +61,39 @@ namespace Day12
         {
             return $"<x={X}, y={Y}, z={Z}>";
         }
+
+        protected bool Equals(Point3D other)
+        {
+            return X == other.X && Y == other.Y && Z == other.Z;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Point3D) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = X;
+                hashCode = (hashCode * 397) ^ Y;
+                hashCode = (hashCode * 397) ^ Z;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(Point3D left, Point3D right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Point3D left, Point3D right)
+        {
+            return !Equals(left, right);
+        }
     }
 }
