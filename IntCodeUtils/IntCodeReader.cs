@@ -96,6 +96,7 @@ namespace IntCodeUtils
                     case 99:
                         //Console.WriteLine(inputs[0]);
                         //Console.WriteLine("HALT");
+                        // TODO : Change this to In64.MinValue or to Throwing or anything
                         return Int32.MinValue;
                     default:
                         return -1;
