@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using IntCodeUtils;
 
 namespace Day13
@@ -16,12 +17,20 @@ namespace Day13
             // 0 and default are black, 1 means white
             var map = new Dictionary<(long x, long y), long>();
 
+            Dictionary<int, char> drawings = new Dictionary<int, char>()
+            {
+                [0] = ' ',
+                [1] = '|',
+                [2] = '#',
+                [3] = '_',
+                [4] = 'o'
+            };
+
             long result = 0;
 
             Func<long> movePaddle = () =>
                 Math.Sign(map.First(x => x.Value == 4).Key.x - map.First(x => x.Value == 3).Key.x);
 
-            int i = 0;
             while (true)
             {
                 long x = reader.RunIntCode(movePaddle);
@@ -33,12 +42,15 @@ namespace Day13
                 }
 
                 map[(x, y)] = result;
-                if (x == -1 && y == 0)
-                {
-                    Console.WriteLine($"number of remaining blocks : {map.Count(x => x.Value == 2)}");
-                    Console.WriteLine($"currentScore : {map[(-1, 0)]}");
-                }
-                i++;
+                //if (x == -1 && y == 0)
+                //{
+                //    Console.WriteLine($"number of remaining blocks : {map.Count(x => x.Value == 2)}");
+                //    Console.WriteLine($"currentScore : {map[(-1, 0)]}");
+                //}
+
+                Console.SetCursorPosition((int) x == -1 ? 0 : (int) x + 10, (int) y);
+                Console.Write(x == -1 ? result.ToString() : drawings[(int) result].ToString());
+                Thread.Sleep(1);
             }
         }
     }
