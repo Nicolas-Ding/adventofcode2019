@@ -39,15 +39,15 @@ namespace Day14
 
             while (max - min > 1)
             {
-                long response = NeededOre(reactions, (max + min) / 2);
+                long response = NeededOre(reactions, (max + min) >> 1);
 
                 if (response > 1000000000000)
                 {
-                    max = (max + min) / 2;
+                    max = (max + min) >> 1;
                 }
                 else
                 {
-                    min = (max + min) / 2;
+                    min = (max + min) >> 1;
                 }
                 Console.WriteLine($"{min} {max}");
             }
