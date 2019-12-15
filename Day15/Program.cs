@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using IntCodeUtils;
@@ -33,9 +34,49 @@ namespace Day15
             DroidY = 0;
             MinMovesToPosition[(0, 0)] = 0;
 
-            TryMoveDroid();
+            try
+            {
+                TryMoveDroid();
+            }
+            catch (Exception e)
+            {
+                // restart everything again from this position 
+                DroidX = 0;
+                DroidY = 0;
+                MinMovesToPosition.Clear();
+                MinMovesToPosition[(0, 0)] = 0;
+                TryMoveDroid2();
+                Console.WriteLine(MinMovesToPosition.Max(k => k.Value));
+            }
+        }
 
-            Console.WriteLine(MinMovesToPosition[(CheeseX, CheeseY)]);
+        static void TryMoveDroid2()
+        {
+            for (int i = 1; i <= 4; i++)
+            {
+                long response = Reader.RunIntCode(() => i);
+                int oldX = DroidX;
+                int oldY = DroidY;
+                Advance(i);
+                switch (response)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                    case 2:
+                        if (SaveNewPosition(oldX, oldY))
+                        {
+                            TryMoveDroid2();
+                        }
+                        break;
+                }
+
+                if (response > 0)
+                {
+                    Reader.RunIntCode(() => Reverse(i));
+                }
+                Retreat(i);
+            }
         }
 
         static void TryMoveDroid()
@@ -43,9 +84,6 @@ namespace Day15
             for (int i = 1; i <= 4; i++)
             {
                 long response = Reader.RunIntCode(() => i);
-                string responseString = response == 0 ? "WALL" : (response == 1 ? "OK" : "CHEESE");
-                string directionString = i == 1 ? "NORTH" : i == 2 ? "SOUTH" : i == 3 ? "WEST" : "EAST";
-                //Console.WriteLine($"From Position {DroidX},{DroidY}: Trying {directionString}, response is {responseString}");
                 int oldX = DroidX;
                 int oldY = DroidY;
                 Advance(i);
@@ -64,21 +102,13 @@ namespace Day15
                         CheeseX = DroidX;
                         CheeseY = DroidY;
                         SaveNewPosition(oldX, oldY);
-                        break;
+                        throw new Exception("found Cheese");
                 }
 
                 if (response > 0)
                 {
-                    long responseRetreat = Reader.RunIntCode(() => Reverse(i));
-                    responseString = responseRetreat == 0 ? "WALL" : (response == 1 ? "OK" : "CHEESE");
-                    directionString = Reverse(i) == 1 ? "NORTH" : i == 2 ? "SOUTH" : i == 3 ? "WEST" : "EAST";
-                    //Console.WriteLine($"From Position {DroidX},{DroidY}: Trying {directionString}, response is {responseString} (reverse)");
-                    if (responseRetreat != 1)
-                    {
-                        throw new Exception($"response Retreat was not 1 but was {responseRetreat}");
-                    }
+                    Reader.RunIntCode(() => Reverse(i));
                 }
-
                 Retreat(i);
             }
         }
