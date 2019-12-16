@@ -16,9 +16,10 @@ namespace Day16
             StringBuilder builder = new StringBuilder();
 
             string input = "59767332893712499303507927392492799842280949032647447943708128134759829623432979665638627748828769901459920331809324277257783559980682773005090812015194705678044494427656694450683470894204458322512685463108677297931475224644120088044241514984501801055776621459006306355191173838028818541852472766531691447716699929369254367590657434009446852446382913299030985023252085192396763168288943696868044543275244584834495762182333696287306000879305760028716584659188511036134905935090284404044065551054821920696749822628998776535580685208350672371545812292776910208462128008216282210434666822690603370151291219895209312686939242854295497457769408869210686246";
+            input = "19617804207202209144916044189917";
             input = "03036732577212944063491565474664";
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 builder.Append(input);
             }
@@ -29,6 +30,7 @@ namespace Day16
 
             for (int p = 0; p < 100; p++)
             {
+                Console.WriteLine(p);
                 string result = "";
                 for (int i = 0; i < Line.Length; i++)
                 {
@@ -37,6 +39,7 @@ namespace Day16
 
                 Line = result;
             }
+            //Console.WriteLine(Line);
             Console.WriteLine(Line.Substring(Int32.Parse(Line.Substring(0, 7)), 8));
         }
 
@@ -45,12 +48,10 @@ namespace Day16
             int result = 0;
             IEnumerator<int> multiplicators = GetMultiplicators(digit + 1).GetEnumerator();
             multiplicators.MoveNext();
-            multiplicators.MoveNext();
 
-            foreach (char c in Line)
+            for(int i = digit; i < Line.Length; i++)
             {
-                // Console.WriteLine($"{char.GetNumericValue(c)} * {multiplicators.Current}");
-                result += (int) char.GetNumericValue(c) * multiplicators.Current;
+                result += (int) char.GetNumericValue(Line[i]) * multiplicators.Current;
                 multiplicators.MoveNext();
             }
 
@@ -61,7 +62,7 @@ namespace Day16
         public static IEnumerable<int> GetMultiplicators(int element)
         {
 
-            int f = 0;
+            int f = 1;
             while(true)
             {
                 int factor = _factorList[f % _factorList.Count];
