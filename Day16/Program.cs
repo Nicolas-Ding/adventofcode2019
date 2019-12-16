@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Day16
@@ -11,6 +12,8 @@ namespace Day16
 
         public static string Line;
 
+        // public static Dictionary<char, int> CharToInt;
+
         static void Main(string[] args)
         {
             StringBuilder builder = new StringBuilder();
@@ -20,6 +23,21 @@ namespace Day16
             input = "03036732577212944063491565474664";
             input = "03036732577212944063491565474664";
 
+            //CharToInt = new Dictionary<char, int>
+            //{
+            //    ['0'] = 0,
+            //    ['1'] = 1,
+            //    ['2'] = 2,
+            //    ['3'] = 3,
+            //    ['4'] = 4,
+            //    ['5'] = 5,
+            //    ['6'] = 6,
+            //    ['7'] = 7,
+            //    ['8'] = 8,
+            //    ['9'] = 9
+            //};
+            // input = "12345678";
+
             for (int i = 0; i < 10000; i++)
             {
                 builder.Append(input);
@@ -28,21 +46,43 @@ namespace Day16
             Line = builder.ToString();
 
             _factorList = new List<int> {0, 1, 0, -1};
-
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
             for (int p = 0; p < 100; p++)
             {
-                Console.WriteLine(p);
-                string result = "";
+                TimeSpan start = stopWatch.Elapsed;
+                StringBuilder result = new StringBuilder();
+                int previousResult = 0;
+                int previousI = 0;
                 for (int i = 0; i < Line.Length; i++)
                 {
-                    result += Math.Abs(ComputeDigits(i) % 10);
+                    previousResult = Math.Abs(ComputeDigits(i) % 10);
+                    result.Append(previousResult);
+                    if (i > Line.Length / 4 + 5)
+                    {
+                        previousI = i;
+                        break;
+                    }
                 }
+                for (int i = previousI + 1; i < Line.Length; i++)
+                {
+                    previousResult -= -10 + (int) char.GetNumericValue(Line[i - 1]);
+                    if (2 * i - 1 < Line.Length)
+                    {
+                        previousResult += (int)char.GetNumericValue(Line[2 * i - 1]);
+                    }
+                    if (2 * i < Line.Length)
+                    {
+                        previousResult += (int)char.GetNumericValue(Line[2 * i]);
+                    }
+                    result.Append(previousResult % 10);
+                }
+                Console.WriteLine($"{p} finished, elapsed time : {stopWatch.Elapsed.Minutes} min {stopWatch.Elapsed.Seconds} sec");
 
-                Line = result;
-                //Console.WriteLine(Line);
+                Line = result.ToString();
             }
             Console.WriteLine(Line);
-            Console.WriteLine(Line.Substring(Int32.Parse(Line.Substring(0, 7)), 8));
+            //Console.WriteLine(Line.Substring(Int32.Parse(Line.Substring(0, 7)), 8));
         }
 
         public static int ComputeDigits(int line) // should be 0 at start
@@ -54,37 +94,22 @@ namespace Day16
 
             while (c * digit - 1 < Line.Length)
             {
-                for (int i = c * digit - 1; i < Math.Min(Line.Length, (c + 1) * digit - 1); i++)
+                int stop = Math.Min(Line.Length, (c + 1) * digit - 1);
+                for (int i = c * digit - 1; i < stop; i++)
                 {
-                    result += (int) char.GetNumericValue(Line[i]);
+                    result += (int)char.GetNumericValue(Line[i]);
                 }
 
-                for (int i = (c + 2) * digit - 1; i < Math.Min(Line.Length, (c + 3) * digit - 1); i++)
+                stop = Math.Min(Line.Length, (c + 3) * digit - 1);
+                for (int i = (c + 2) * digit - 1; i < stop; i++)
                 {
-                    result -= (int) char.GetNumericValue(Line[i]);
+                    result -= (int)char.GetNumericValue(Line[i]);
                 }
 
                 c+=4;
             }
 
             return result;
-        }
-
-        public static IEnumerable<int> GetMultiplicators(int element)
-        {
-
-            int f = 1;
-            while(true)
-            {
-                int factor = _factorList[f % _factorList.Count];
-
-                for (int i = 0; i < element; i++)
-                {
-                    yield return factor;
-                }
-
-                f++;
-            }
         }
     }
 }
