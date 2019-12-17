@@ -27,10 +27,10 @@ namespace Day17
 
             // R,R,8,R,12,L,8,L,8,R,12, L,8,R,10, R, 10, L, 7
 
-            string instructions = "A,B,C,B,C ";
-            instructions += "R,R ";
-            instructions += "8,R,12 ";
-            instructions += "L,8,L ";
+            string instructions = "B,B,A,C,A,C,A,B,C,B ";
+            instructions += "L,10,L,10,R,8 ";
+            instructions += "R,8,L,12,R,8 ";
+            instructions += "L,12,L,12,L,10,R,10 ";
             instructions += "n ";
             int a = 0;
 
@@ -96,15 +96,15 @@ namespace Day17
                         Console.ReadLine();
                         break;
                     default:
-                        //Console.WriteLine($"Unexpected output : {(char) output}");
+                        Console.WriteLine($"Unexpected output : {(char) output} : {output}");
                         break;
                         // throw new Exception($"{output} is not recognized as a valid output");
                 }
 
                 if (map.ContainsKey((oldX, oldY)))
                 {
-                    Console.SetCursorPosition(oldX, oldY);
-                    Console.Write(map[(oldX, oldY)]);
+                    //Console.SetCursorPosition(oldX, oldY);
+                    //Console.Write(map[(oldX, oldY)]);
                 }
 
                 // can be optimized
