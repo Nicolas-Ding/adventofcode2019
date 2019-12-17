@@ -19,7 +19,17 @@ namespace IntCodeUtils
             _relativeBase = 0;
         }
 
-        public long RunIntCode(Func<long> GetInputs)
+        public long RunIntCode(long l)
+        {
+            return RunIntCode(() => l);
+        }
+
+        public long RunIntCode()
+        {
+            return RunIntCode(() => 0);
+        }
+
+        public long RunIntCode(Func<long> getInputs)
         {
             int inputCursor = 0;
 
@@ -46,7 +56,7 @@ namespace IntCodeUtils
                         }
                         else
                         {
-                            input = GetInputs();
+                            input = getInputs();
                             inputCursor++;
                         }
 
