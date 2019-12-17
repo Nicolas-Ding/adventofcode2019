@@ -9,8 +9,6 @@ namespace Day16
 {
     class Program
     {
-        static List<int> _factorList;
-
         public static List<int> Line;
 
         // public static Dictionary<char, int> CharToInt;
@@ -47,7 +45,6 @@ namespace Day16
 
             Line = builder.ToString().Select(c => (int)char.GetNumericValue(c)).ToList();
 
-            _factorList = new List<int> {0, 1, 0, -1};
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             for (int p = 0; p < 100; p++)
