@@ -37,48 +37,88 @@ namespace Day18
 
         public static void Part1()
         {
-            List<Dictionary<(string, char), int>> keysMap = new List<Dictionary<(string, char), int>>();
-            keysMap.Add(new Dictionary<(string, char), int> { [("", '@')] = 0});
-            List<Dictionary<(string, char), char>> comesFrom = new List<Dictionary<(string, char), char>>();
-            comesFrom.Add(new Dictionary<(string, char), char> { [("", '@')] = ' ' });
+            var keysMap = new List<Dictionary<(string, char, char, char, char), int>>();
+            keysMap.Add(new Dictionary<(string, char, char, char, char), int> { [("", '@', '&', '|', '^')] = 0});
 
             int i = 0;
             while (keysMap[i].First().Key.Item1.Length != _charToPosition.Count(c => char.IsLower(c.Key)))
             {
                 // at position i+1
-                keysMap.Add(new Dictionary<(string, char), int>());
-                comesFrom.Add(new Dictionary<(string, char), char>());
-                foreach (KeyValuePair<(string visitedKeys, char lastKey), int> previousState in keysMap[i])
+                keysMap.Add(new Dictionary<(string, char, char, char, char), int>());
+                foreach (KeyValuePair<(string visitedKeys, char lastKey1, char lastKey2, char lastKey3, char lastKey4), int> previousState in keysMap[i])
                 {
-                    (int y, int x) = _charToPosition[previousState.Key.lastKey];
+                    // lastKey1
+                    (int y, int x) = _charToPosition[previousState.Key.lastKey1];
                     Dictionary<char, int> accessiblekeys = GetAllAvailableKeys(y, x, new HashSet<(int y, int x)>(), previousState.Key.visitedKeys);
-
-                    // for each possible keys we can access from here
                     foreach (KeyValuePair<char, int> accessibleKey in accessiblekeys)
                     {
                         char[] newKeysNotInOrder = (previousState.Key.visitedKeys + accessibleKey.Key).ToCharArray();
                         Array.Sort(newKeysNotInOrder);
                         string newKeys = new string(newKeysNotInOrder);
+                        var newKeyTuple = (newKeys, accessibleKey.Key, previousState.Key.lastKey2,
+                            previousState.Key.lastKey3, previousState.Key.lastKey4);
+                        CheckAccessibleKeys(keysMap, i, newKeyTuple, accessibleKey, previousState);
+                    }
 
-                        // check if this state has already been encountered and store it if better
-                        if (keysMap[i+1].ContainsKey((newKeys, accessibleKey.Key)))
-                        {
-                            if (accessibleKey.Value + previousState.Value < keysMap[i+1][(newKeys, accessibleKey.Key)])
-                            {
-                                keysMap[i + 1][(newKeys, accessibleKey.Key)] = accessibleKey.Value + previousState.Value;
-                                comesFrom[i + 1][(newKeys, accessibleKey.Key)] = previousState.Key.lastKey;
-                            }
-                        }
-                        else
-                        {
-                            keysMap[i + 1][(newKeys, accessibleKey.Key)] = accessibleKey.Value + previousState.Value;
-                            comesFrom[i + 1][(newKeys, accessibleKey.Key)] = previousState.Key.lastKey;
-                        }
+                    // lastKey2
+                    (y, x) = _charToPosition[previousState.Key.lastKey2];
+                    accessiblekeys = GetAllAvailableKeys(y, x, new HashSet<(int y, int x)>(), previousState.Key.visitedKeys);
+                    foreach (KeyValuePair<char, int> accessibleKey in accessiblekeys)
+                    {
+                        char[] newKeysNotInOrder = (previousState.Key.visitedKeys + accessibleKey.Key).ToCharArray();
+                        Array.Sort(newKeysNotInOrder);
+                        string newKeys = new string(newKeysNotInOrder);
+                        var newKeyTuple = (newKeys, previousState.Key.lastKey1, accessibleKey.Key,
+                            previousState.Key.lastKey3, previousState.Key.lastKey4);
+                        CheckAccessibleKeys(keysMap, i, newKeyTuple, accessibleKey, previousState);
+                    }
+
+                    // lastKey3
+                    (y, x) = _charToPosition[previousState.Key.lastKey3];
+                    accessiblekeys = GetAllAvailableKeys(y, x, new HashSet<(int y, int x)>(), previousState.Key.visitedKeys);
+                    foreach (KeyValuePair<char, int> accessibleKey in accessiblekeys)
+                    {
+                        char[] newKeysNotInOrder = (previousState.Key.visitedKeys + accessibleKey.Key).ToCharArray();
+                        Array.Sort(newKeysNotInOrder);
+                        string newKeys = new string(newKeysNotInOrder);
+                        var newKeyTuple = (newKeys, previousState.Key.lastKey1, previousState.Key.lastKey2,
+                            accessibleKey.Key, previousState.Key.lastKey4);
+                        CheckAccessibleKeys(keysMap, i, newKeyTuple, accessibleKey, previousState);
+                    }
+
+                    // lastKey4
+                    (y, x) = _charToPosition[previousState.Key.lastKey4];
+                    accessiblekeys = GetAllAvailableKeys(y, x, new HashSet<(int y, int x)>(), previousState.Key.visitedKeys);
+                    foreach (KeyValuePair<char, int> accessibleKey in accessiblekeys)
+                    {
+                        char[] newKeysNotInOrder = (previousState.Key.visitedKeys + accessibleKey.Key).ToCharArray();
+                        Array.Sort(newKeysNotInOrder);
+                        string newKeys = new string(newKeysNotInOrder);
+                        var newKeyTuple = (newKeys, previousState.Key.lastKey1, previousState.Key.lastKey2,
+                            previousState.Key.lastKey3, accessibleKey.Key);
+                        CheckAccessibleKeys(keysMap, i, newKeyTuple, accessibleKey, previousState);
                     }
                 }
                 i++;
             }
+        }
 
+        private static void CheckAccessibleKeys(List<Dictionary<(string, char, char, char, char), int>> keysMap, int i,
+            (string newKeys, char Key, char lastKey2, char lastKey3, char lastKey4) newKeyTuple, KeyValuePair<char, int> accessibleKey,
+            KeyValuePair<(string visitedKeys, char lastKey1, char lastKey2, char lastKey3, char lastKey4), int> previousState)
+        {
+            // check if this state has already been encountered and store it if better
+            if (keysMap[i + 1].ContainsKey(newKeyTuple))
+            {
+                if (accessibleKey.Value + previousState.Value < keysMap[i + 1][newKeyTuple])
+                {
+                    keysMap[i + 1][newKeyTuple] = accessibleKey.Value + previousState.Value;
+                }
+            }
+            else
+            {
+                keysMap[i + 1][newKeyTuple] = accessibleKey.Value + previousState.Value;
+            }
         }
 
         public static Dictionary<char, int> GetAllAvailableKeys(int y, int x, HashSet<(int y, int x)> visited, string availableKeys)
