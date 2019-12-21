@@ -29,6 +29,24 @@ namespace IntCodeUtils
             return RunIntCode(() => 0);
         }
 
+        public long RunIntCode(string s)
+        {
+            int a = 0;
+
+            Func<long> getInstructions = () =>
+            {
+                char c = s[a];
+                a++;
+                if (c == ' ')
+                {
+                    return 10;
+                }
+                return (int)c;
+            };
+
+            return RunIntCode(getInstructions);
+        }
+
         public long RunIntCode(Func<long> getInputs)
         {
             int inputCursor = 0;
